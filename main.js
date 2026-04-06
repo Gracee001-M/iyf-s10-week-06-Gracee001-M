@@ -189,3 +189,42 @@ async function showUserData() {
 
 // Run it
 showUserData(); 
+
+async function getSingleUser(id) {
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const user = await response.json();
+        console.log("Single user:", user);
+    } catch (error) {
+        console.error("Failed to fetch user:", error);
+    }
+}
+
+getSingleUser(1);
+
+async function getAllUsers() {
+    try {
+        const response = await fetch("https://jsonplaceholder.typicode.com/users");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const users = await response.json();
+        console.log("All users:", users);
+    } catch (error) {
+        console.error("Failed to fetch users:", error);
+    }
+}
+
+getAllUsers();
+
+async function getUserPosts(userId) {
+    try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}/posts`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const posts = await response.json();
+        console.log(`Posts for user ${userId}:`, posts);
+    } catch (error) {
+        console.error("Failed to fetch posts:", error);
+    }
+}
+
+getUserPosts(1);
