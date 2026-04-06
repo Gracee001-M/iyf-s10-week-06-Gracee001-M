@@ -100,3 +100,30 @@ getUserData(1)
 }
 
 showUserData();
+
+function getUserData(userId) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (userId > 0) {
+                resolve({ id: userId, name: "User " + userId });
+            } else {
+                reject("Invalid user ID");
+            }
+        }, 1000);
+    });
+}
+
+// Fetch 3 users simultaneously
+Promise.all([getUserData(1), getUserData(2), getUserData(3)])
+    .then(users => {
+        console.log("All users:", users);
+        // Display them all at once
+        users.forEach(user => {
+            console.log(`ID: ${user.id}, Name: ${user.name}`);
+        });
+    })
+    .catch(error => {
+        console.error("One failed:", error);
+    });
+
+    
