@@ -1,0 +1,32 @@
+<div id="app">
+    <h1>Create a Post</h1>
+    <form id="post-form">
+        <input type="text" id="title" placeholder="Title" required>
+        <textarea id="body" placeholder="Post content" required></textarea>
+        <input type="number" id="userId" placeholder="User ID" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<div id="app">
+    <h1>User Directory</h1>
+    
+    <input type="text" id="search" placeholder="Search by name or email">
+    
+    <select id="sort">
+        <option value="az">Sort by Name (A-Z)</option>
+        <option value="za">Sort by Name (Z-A)</option>
+    </select>
+    
+    <select id="city-filter">
+        <option value="all">All Cities</option>
+        <!-- Cities will be populated dynamically -->
+    </select>
+    
+    <div id="loading">Loading...</div>
+    <div id="error" class="hidden"></div>
+    <div id="users-container"></div>
+</div>
+

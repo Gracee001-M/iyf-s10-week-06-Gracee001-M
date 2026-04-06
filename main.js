@@ -228,3 +228,155 @@ async function getUserPosts(userId) {
 }
 
 getUserPosts(1);
+
+<div class="user-card">
+    <h2>Leanne Graham</h2>
+    <p>📧 Sincere@april.biz</p>
+    <p>🏢 Romaguera-Crona</p>
+    <p>📍 Gwenborough</p>
+</div>
+
+const form = document.getElementById("post-form");
+const resultDiv = document.getElementById("result");
+
+async function createPost(title, body, userId) {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ title, body, userId })
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to create post");
+    }
+
+    return response.json();
+}
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const title = document.getElementById("title").value.trim();
+    const body = document.getElementById("body").value.trim();
+    const userId = document.getElementById("userId").value.trim();
+
+    try {
+        const newPost = await createPost(title, body, userId);
+        displayResult(newPost);
+        form.reset();
+    } catch (error) {
+        resultDiv.textContent = `Error: ${error.message}`;
+        resultDiv.style.color = "red";
+    }
+});
+
+function displayResult(post) {
+    resultDiv.innerHTML = `
+        <h2>Post Created!</h2>
+        <p><strong>ID:</strong> ${post.id}</p>
+        <p><strong>Title:</strong> ${post.title}</p>
+        <p><strong>Body:</strong> ${post.body}</p>
+        <p><strong>User ID:</strong> ${post.userId}</p>
+    `;
+    resultDiv.style.color = "green";
+}
+
+let allUsers = [];
+
+const loading = document.getElementById("loading");
+const errorDiv = document.getElementById("error");
+const container = document.getElementById("users-container");
+const searchInput = document.getElementById("search");
+const sortSelect = document.getElementById("sort");
+const cityFilter = document.getElementById("city-filter");
+
+async function fetchUsers() {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+    if (!response.ok) throw new Error("Failed to fetch users");
+    return response.json();
+}
+
+async function init() {
+    try {
+        showLoading();
+        allUsers = await fetchUsers();
+        populateCityFilter(allUsers);
+        renderUsers();
+    } catch (error) {
+        showError(error.message);
+    } finally {
+        hideLoading();
+    }
+
+    // Search
+    searchInput.addEventListener("input", renderUsers);
+
+    // Sort
+    sortSelect.addEventListener("change", renderUsers);
+
+    // City filter
+    cityFilter.addEventListener("change", renderUsers);
+}
+
+function renderUsers() {
+    const query = searchInput.value.toLowerCase();
+    const sortOrder = sortSelect.value;
+    const selectedCity = cityFilter.value;
+
+    let filtered = allUsers.filter(user =>
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query)
+    );
+
+    if (selectedCity !== "all") {
+        filtered = filtered.filter(user => user.address.city === selectedCity);
+    }
+
+    if (sortOrder === "az") {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOrder === "za") {
+        filtered.sort((a, b) => b.name.localeCompare(a.name));
+    }
+
+    displayUsers(filtered);
+}
+
+function populateCityFilter(users) {
+    const cities = [...new Set(users.map(user => user.address.city))];
+    cities.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        cityFilter.appendChild(option);
+    });
+}
+
+function showLoading() {
+    loading.classList.remove("hidden");
+    container.innerHTML = "";
+}
+
+function hideLoading() {
+    loading.classList.add("hidden");
+}
+
+function showError(message) {
+    errorDiv.textContent = `Error: ${message}`;
+    errorDiv.classList.remove("hidden");
+}
+
+function displayUsers(users) {
+    container.innerHTML = users.map(user => `
+        <div class="user-card">
+            <h2>${user.name}</h2>
+            <p>📧 ${user.email}</p>
+            <p>🏢 ${user.company.name}</p>
+            <p>📍 ${user.address.city}</p>
+        </div>
+    `).join("");
+}
+
+// Initialize
+init();
